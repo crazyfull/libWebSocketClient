@@ -19,7 +19,6 @@ if(UNIX)
     endif()
 
     set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation directory for libraries")
-    #set(INSTALL_INC_DIR "${INSTALL_LIB_DIR}/include" CACHE PATH "Installation directory for headers")
     set(INSTALL_INC_DIR "/usr/include/WebSocketClient" CACHE PATH "Installation directory for headers")
 endif()
 

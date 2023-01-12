@@ -117,7 +117,6 @@ void WebSocketClient::SendClose(const string &message)
     WSPckClose(message, m_usingMask);
 }
 
-/**/
 void WebSocketClient::onMessage(const WSMessageCallback &callback)
 {
     this->_messagesCallback = callback;

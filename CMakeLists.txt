@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.0.2
+    VERSION 1.0.3
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 

@@ -1,1 +1,1 @@
-cmake -B build -S . -DUSE_OPENSSL=1
+cmake -B build -S . -D USE_OPENSSL=1

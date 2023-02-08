@@ -4,7 +4,7 @@ a Simple and powerful websocket client library with the least dependency for c++
 
 
 **features**
-
+   - support for WebSocket (RFC 6455) 
    - support ssl connection
    - Minimal dependency and portable
 

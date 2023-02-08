@@ -49,7 +49,7 @@ int main()
     WebSocket.onMessage(onMessageCallback);
     WebSocket.onConnect(onConnetCallback);
     WebSocket.onClose(onCloseCallback);
-    WebSocket.onError(onErrorCallback);  //error haye marboot be ssl ham hande beshe
+    WebSocket.onError(onErrorCallback); 
     WebSocket.setUsingMask(true);
     WebSocket.setDisableCertificateValidation(true);
 

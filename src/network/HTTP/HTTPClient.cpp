@@ -62,7 +62,7 @@ void HTTPClient::Connect(const string &url)
     int targetPort = StringToNumber(m_url.port.c_str());
 
     if(m_url.protocole.compare("ws") == 0){
-        ConnectToHost(m_url.host.c_str(), targetPort);
+        ConnectToHost(m_url.host.c_str(), targetPort, false);
     }
 
     if(m_url.protocole.compare("wss") == 0){

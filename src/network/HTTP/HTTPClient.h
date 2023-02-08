@@ -1,7 +1,7 @@
 #ifndef HTTPCLIENT_H
 #define HTTPCLIENT_H
 #include "../HTTP/HTTPHeaderFields.h"
-#include "../TCP/TCPSocket.h"
+#include "../TCP/clsTCPSocket.h"
 
 #define MAX_HEADER_LENGTH 2*1000 //2KB
 

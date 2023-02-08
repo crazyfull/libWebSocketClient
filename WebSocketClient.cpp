@@ -1,7 +1,7 @@
 #include "WebSocketClient.h"
 #include "src/network/SocketBase.h"
 #include "src/log.h"
-#include "src/network/TCP/TCPSocket.h"
+#include "src/network/TCP/clsTCPSocket.h"
 
 using namespace std;
 
@@ -61,7 +61,7 @@ void WebSocketClient::OnClosed()
             this->_closeCallback(this);
         }
     }else{
-        OnConnectFailed("connection closed", -1);
+        //OnConnectFailed("connection closed", -1);
     }
     //LOG("OnClosed");
 }

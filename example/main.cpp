@@ -40,9 +40,10 @@ void onErrorCallback(WebSocketClient *WebSocket, WSError& err) {
 
 int main()
 {
-    string strUrl = "wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
-    //strUrl = "wss://javascript.info/article/websocket/chat/ws";
-    strUrl = "ws://104.26.12.17/article/websocket/chat/ws";
+    string strUrl = "ws://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
+    strUrl = "wss://javascript.info/article/websocket/chat/ws";
+    //strUrl = "ws://104.26.12.17/article/websocket/chat/ws";
+    //strUrl = "wss://localhost:4433/ws";
 
     WebSocketClient WebSocket;
     WebSocket.onMessage(onMessageCallback);

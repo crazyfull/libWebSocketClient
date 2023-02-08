@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.0.3
+    VERSION 1.1.4
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+#add_definitions(-D USE_LIBEVENT)
+add_definitions(-D USE_OPENSSL)
 
 if(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
@@ -39,7 +41,7 @@ endif()
 set(SOURCES ${SOURCES}
     WebSocketClient.cpp
     src/network/SocketBase.cpp
-    src/network/TCP/TCPSocket.cpp
+    src/network/TCP/clsTCPSocket.cpp
     src/network/SSL/openssl_hostname_validation.cpp
     src/network/SSL/hostcheck.cpp
     src/network/HTTP/WSocketHeader.cpp
@@ -55,7 +57,7 @@ set(HEADERS ${HEADERS}
     src/log.h
     src/network/SocketHeader.h
     src/network/SocketBase.h
-    src/network/TCP/TCPSocket.h
+    src/network/TCP/clsTCPSocket.h
     src/network/SSL/openssl_hostname_validation.h
     src/network/SSL/hostcheck.h
     src/network/HTTP/WSocketHeader.h
@@ -96,7 +98,7 @@ install(FILES
     src/network/SocketHeader.h
     src/network/SocketBase.h
     DESTINATION "${INSTALL_INC_DIR}/src/network")
-install(FILES src/network/TCP/TCPSocket.h DESTINATION "${INSTALL_INC_DIR}/src/network/TCP")
+install(FILES src/network/TCP/clsTCPSocket.h DESTINATION "${INSTALL_INC_DIR}/src/network/TCP")
 install(FILES
     src/network/SSL/openssl_hostname_validation.h
     src/network/SSL/hostcheck.h
@@ -142,3 +144,8 @@ else()
     message(STATUS "Using OpenSSL: NO")
 endif()
 
+
+
+#disable log messages
+#NO_NEED_DEBUG
+#NO_NEED_LOG

@@ -9,13 +9,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(WebSocketClient.run main.cpp)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 
-
 #target_link_libraries(WebSocketClient.run -L/usr/lib/WebSocketClient)
 
 target_link_libraries(WebSocketClient.run -lWebSocketClient)
 target_link_libraries(WebSocketClient.run -lpthread -lssl -lcrypto)
-target_link_libraries(WebSocketClient.run -levent -levent_pthreads -levent_openssl)
-#target_link_libraries(WebSocketClient.run -L/home/crow/programing/libWebSocketClient/WebSocketClient.run/lib/libEvent/include)
 
 #target_link_libraries(WebSocketClient.run /home/crow/programing/libWebSocketClient/sample/lib/libEvent/linux64/libevent_openssl.a)
 #target_link_libraries(WebSocketClient.run /home/crow/programing/libWebSocketClient/sample/lib/libEvent/linux64/libevent.a)

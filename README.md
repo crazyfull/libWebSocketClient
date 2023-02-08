@@ -5,7 +5,7 @@ a Simple and powerful websocket client library with the least dependency for c++
 
 **features**
 
-   - support secure connection
+   - support ssl connection
    - Minimal dependency and portable
 
 **how to build**

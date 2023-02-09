@@ -35,6 +35,7 @@ IF(WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 ENDIF()
 
+
 #include_directories(
 #    "${PROJECT_SOURCE_DIR}/src"
 #    "${PROJECT_SOURCE_DIR}/src/network"
@@ -44,6 +45,10 @@ ENDIF()
 #    "/src/network/HTTP"
 #    "/src/network/SSL"
 #)
+
+include_directories(
+    "${PROJECT_SOURCE_DIR}/src"
+)
 
 set(SOURCES ${SOURCES}
     WebSocketClient.cpp

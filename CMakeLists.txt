@@ -5,12 +5,12 @@ project(libWebSocketClient
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #add_definitions(-D USE_LIBEVENT)
-add_definitions(-D USE_OPENSSL)
+#add_definitions(-D USE_OPENSSL)
 
 if(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
@@ -40,7 +40,6 @@ endif()
 
 set(SOURCES ${SOURCES}
     WebSocketClient.cpp
-    src/network/SocketBase.cpp
     src/network/TCP/clsTCPSocket.cpp
     src/network/SSL/openssl_hostname_validation.cpp
     src/network/SSL/hostcheck.cpp
@@ -56,7 +55,6 @@ set(HEADERS ${HEADERS}
     WebSocketClient.h
     src/log.h
     src/network/SocketHeader.h
-    src/network/SocketBase.h
     src/network/TCP/clsTCPSocket.h
     src/network/SSL/openssl_hostname_validation.h
     src/network/SSL/hostcheck.h
@@ -92,11 +90,10 @@ endif()
 #)
 
 # Install headers
-install(FILES WebSocketClient.h DESTINATION "${INSTALL_INC_DIR}")
+#install(FILES WebSocketClient.h DESTINATION "${INSTALL_INC_DIR}")
 install(FILES src/log.h DESTINATION "${INSTALL_INC_DIR}/src")
 install(FILES
     src/network/SocketHeader.h
-    src/network/SocketBase.h
     DESTINATION "${INSTALL_INC_DIR}/src/network")
 install(FILES src/network/TCP/clsTCPSocket.h DESTINATION "${INSTALL_INC_DIR}/src/network/TCP")
 install(FILES

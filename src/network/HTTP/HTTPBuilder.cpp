@@ -1,4 +1,5 @@
 #include "HTTPBuilder.h"
+#include <time.h>   //for win32
 #include "src/log.h"
 #include "src/base64/base64.h"
 
@@ -8,10 +9,15 @@ HTTPBuilder::HTTPBuilder()
 }
 
 string HTTPBuilder::generateKey(){
+
     char buff[16];
+#ifdef _WIN32
+    srand(time(nullptr));
+#else
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
     srand ((time_t)ts.tv_nsec);
+#endif
 
     for(int i = 0;i < sizeof(buff);i++){
         uint8_t rnd = rand() % 255;

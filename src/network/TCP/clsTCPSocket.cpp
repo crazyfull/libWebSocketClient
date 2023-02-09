@@ -140,11 +140,24 @@ void TCPSocket::SetSocketResourceAddr(int fd, bool isEnable)
 void TCPSocket::SetSocketNonBlocking(int fd)
 {
     // set non-blocking
+#ifdef _WIN32
+    u_long iMode = 1;
+    int iResult = ioctlsocket(fd, FIONBIO, &iMode);
+    if (iResult != NO_ERROR)
+        DebugPrint("ioctlsocket failed with error[%d]", iResult);
+#else
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
+#endif
 }
 
 void TCPSocket::SetSocketBlockingMode(int fd)
 {
+#ifdef _WIN32
+    u_long iMode = 0;
+    int iResult = ioctlsocket(fd, FIONBIO, &iMode);
+    if (iResult != NO_ERROR)
+        DebugPrint("ioctlsocket failed with error[%d]", iResult);
+#else
     //get flags
     int flags = 0;
     if ((flags = fcntl(fd, F_GETFL, 0)) < 0){
@@ -158,7 +171,10 @@ void TCPSocket::SetSocketBlockingMode(int fd)
         /* Handle error */
         DebugPrint("error on set flag, error[%d]", ERRNO);
     }
+#endif
 }
+
+
 
 void TCPSocket::SetKeepAlive(int fd, bool isActive)
 {
@@ -648,6 +664,7 @@ void TCPSocket::Close(bool isShutDown)
     if(isShutDown == true){
         shutdown(m_socket, 2);
     }
+
 
     close(m_socket);
 

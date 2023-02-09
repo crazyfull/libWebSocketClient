@@ -7,7 +7,7 @@
     #include <WS2tcpip.h>
     #include <mstcpip.h>
     #include <stdint.h>
-#include <fcntl.h>
+    #include <fcntl.h>
 
     #pragma comment(lib, "ws2_32.lib")
     #define SO_SOCKETSHARED    SO_BROADCAST
@@ -38,10 +38,10 @@
     #define ERRNO       GetLastError()
     #define MSG_NOSIGNAL (0)
     #define sleep Sleep
+    #define close closesocket
 #else
     #define SOCKET_ERRNO    errno
     #define ERRNO       errno
-    #define closesocket close
     #define WSACleanup() (void)0
 #endif
 

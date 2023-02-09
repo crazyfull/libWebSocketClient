@@ -1,5 +1,6 @@
 #include "WSocketHeader.h"
-#include <Wrench/log.h>
+#include <time.h>
+#include "src/log.h"
 
 WSocketHeader::WSocketHeader()
 {
@@ -55,7 +56,7 @@ bool WSocketHeader::setHeader(const char *Buff, int BufferLength)
 */
 
     // https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/wbskt/orasocket.js.html
-    uint opcode = (Buff[0] & 0x0F) & 0xFF;
+    unsigned int opcode = (Buff[0] & 0x0F) & 0xFF;
     m_Frame.Final = ((Buff[0] & 0x80) >> 7) & 0xFF;   //(Buff[0] & 0x80);
     m_Frame.opcode = (WSMessageType)opcode;
     m_Frame.rsv1 = (Buff[0] & 0x40);
@@ -178,11 +179,15 @@ void WSocketHeader::Mask(char *mask_key, char *PayloadData, uint64_t PayloadData
 }
 
 void WSocketHeader::GenerateMaskey(char *key){
+#ifdef _WIN32
+    srand(time(nullptr));
+#else
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
     srand ((time_t)ts.tv_nsec);
-    uint32_t randomKey = rand() % 0xFFFFFFFF;
+#endif
 
+    uint32_t randomKey = rand() % 0xFFFFFFFF;
     memcpy(key, &randomKey, MASK_KEY_SIZE);
 }
 

@@ -283,7 +283,7 @@ bool TCPSocket::ConnectToHost(const char *HostAddress, uint16_t Port, bool using
     //
     m_UsingSSL = usingSSL;
 
-    if(HostAddress == NULL || Port == 0 ){
+    if(HostAddress == nullptr || Port == 0 ){
         OnConnectFailed("target address is invalid", ISINVALID);
         return false;
     }
@@ -295,6 +295,13 @@ bool TCPSocket::ConnectToHost(const char *HostAddress, uint16_t Port, bool using
     //change status...
     setStatus(Connecting);
     OnConnecting();
+
+/*
+    std::async([this]()
+    {
+        onThread(this);
+    });
+*/
 
     std::thread thread(onThread, this);
     thread.detach();

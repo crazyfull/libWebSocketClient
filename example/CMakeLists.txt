@@ -2,31 +2,36 @@ cmake_minimum_required(VERSION 3.5)
 
 project(WebSocketClient.run LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#  set(OPENSSL_USE_STATIC_LIBS TRUE)
+#set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 add_executable(WebSocketClient.run main.cpp)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 
-#target_link_libraries(WebSocketClient.run -L/usr/lib/WebSocketClient)
 
-target_link_libraries(WebSocketClient.run -lWebSocketClient)
-target_link_libraries(WebSocketClient.run -lpthread -lssl -lcrypto)
+IF(UNIX)
+    #link websocket client library
+    target_link_libraries(WebSocketClient.run -lWebSocketClient)
 
-#target_link_libraries(WebSocketClient.run /home/crow/programing/libWebSocketClient/sample/lib/libEvent/linux64/libevent_openssl.a)
-#target_link_libraries(WebSocketClient.run /home/crow/programing/libWebSocketClient/sample/lib/libEvent/linux64/libevent.a)
-#target_link_libraries(WebSocketClient.run /home/crow/programing/libWebSocketClient/sample/lib/libEvent/linux64/libevent_pthreads.a)
-#target_link_libraries(main ${CMAKE_SOURCE_DIR}/libbingitup.a)
+    #link openssl library
+    target_link_libraries(WebSocketClient.run -lpthread -lssl -lcrypto)
+ENDIF()
 
-#link_libraries(opengl32.lib glew32.lib glfw3.lib)
+IF(WIN32)
+    link_libraries(ws2_32.lib)
 
-# include_directories(
-#     "/usr/include"
-#     "/usr/lib/WebSocketClient/include"
-#     "/usr/include/glm"
-#     "/usr/include/glm/gtc"
-#    "${PROJECT_SOURCE_DIR}/src"
-# )
+    #link websocket client library
+    target_link_libraries(WebSocketClient.run ${CMAKE_SOURCE_DIR}/libs/libWebSocketClient/WebSocketClient.lib)
+
+    #include headers of websocket client
+    include_directories("${PROJECT_SOURCE_DIR}/libs/libWebSocketClient/include")
+
+    link_libraries(libucrt.lib libucrtd.lib libvcruntime.lib)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    #LIBS += bcrypt.lib libcmt.lib Shell32.lib Shlwapi.lib User32.lib kernel32.lib Ws2_32.lib advapi32.lib crypt32.lib iphlpapi.lib psapi.lib gdi32.lib
+
+ENDIF()
 
 install(TARGETS WebSocketClient.run LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

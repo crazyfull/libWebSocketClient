@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.5
+    VERSION 1.1.6
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -27,6 +27,13 @@ endif()
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
+
+#for static build on MSVC
+IF(WIN32)
+    link_libraries(libucrt.lib libucrtd.lib libvcruntime.lib)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+ENDIF()
 
 #include_directories(
 #    "${PROJECT_SOURCE_DIR}/src"
@@ -90,7 +97,8 @@ endif()
 #)
 
 # Install headers
-#install(FILES WebSocketClient.h DESTINATION "${INSTALL_INC_DIR}")
+if(UNIX)
+install(FILES WebSocketClient.h DESTINATION "${INSTALL_INC_DIR}")
 install(FILES src/log.h DESTINATION "${INSTALL_INC_DIR}/src")
 install(FILES
     src/network/SocketHeader.h
@@ -115,6 +123,7 @@ install(TARGETS libWebSocketClient libWebSocketClient
     ARCHIVE DESTINATION "${INSTALL_LIB_DIR}"
     LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
 )
+endif()
 
 #install (DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h*")
 

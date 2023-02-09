@@ -25,7 +25,7 @@ void onMessageCallback(WebSocketClient *WebSocket, const WSMessage &message) {
     }
 }
 
-void onConnetCallback(WebSocketClient *WebSocket) {
+void onConnectCallback(WebSocketClient *WebSocket) {
     LOG("onConnetCallback");
     WebSocket->SendMessage("onConnetCallback");
 }
@@ -47,7 +47,7 @@ int main()
 
     WebSocketClient WebSocket;
     WebSocket.onMessage(onMessageCallback);
-    WebSocket.onConnect(onConnetCallback);
+    WebSocket.onConnect(onConnectCallback);
     WebSocket.onClose(onCloseCallback);
     WebSocket.onError(onErrorCallback); 
     WebSocket.setUsingMask(true);

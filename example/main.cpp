@@ -6,7 +6,8 @@ using namespace std;
 #include <stdlib.h>
 #include <stdio.h>
 #include <WebSocketClient/WebSocketClient.h>
-#include <WebSocketClient/log.h>
+#include <WebSocketClient/src/log.h>
+
 
 #include <functional>
 #include <iostream>

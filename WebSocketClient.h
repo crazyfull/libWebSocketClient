@@ -1,6 +1,6 @@
 #ifndef WSCLIENT_H
 #define WSCLIENT_H
-#include "./network/HTTP/WebSocket.h"
+#include "src/network/HTTP/WebSocket.h"
 #include <functional>
 
 class WebSocketClient;

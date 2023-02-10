@@ -1,5 +1,4 @@
 #include "WebSocketClient.h"
-#include "src/log.h"
 #include "src/network/TCP/clsTCPSocket.h"
 
 using namespace std;

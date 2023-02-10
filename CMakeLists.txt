@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.6
+    VERSION 1.1.7
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -46,9 +46,7 @@ ENDIF()
 #    "/src/network/SSL"
 #)
 
-include_directories(
-    "${PROJECT_SOURCE_DIR}/src"
-)
+# include_directories("${PROJECT_SOURCE_DIR}/src")
 
 set(SOURCES ${SOURCES}
     WebSocketClient.cpp

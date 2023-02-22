@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 add_executable(WebSocketClient.run main.cpp)
-set(CMAKE_EXE_LINKER_FLAGS "-static")
+#set(CMAKE_EXE_LINKER_FLAGS "-static")  #for static build
 
 
 IF(UNIX)
@@ -33,5 +33,3 @@ IF(WIN32)
     #LIBS += bcrypt.lib libcmt.lib Shell32.lib Shlwapi.lib User32.lib kernel32.lib Ws2_32.lib advapi32.lib crypt32.lib iphlpapi.lib psapi.lib gdi32.lib
 
 ENDIF()
-
-install(TARGETS WebSocketClient.run LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

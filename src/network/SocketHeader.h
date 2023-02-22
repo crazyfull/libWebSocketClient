@@ -28,8 +28,6 @@
     #include <string.h>
     #include <stdlib.h>
     #include <ctype.h>
-    #include <sys/epoll.h>
-    #include <sys/sendfile.h>
     #define SO_SOCKETSHARED    SO_REUSEPORT
 #endif
 
@@ -45,14 +43,14 @@
     #define WSACleanup() (void)0
 #endif
 
-#ifdef ISINVALID
-#else
+#ifndef ISINVALID
     #define ISINVALID (-1)
 #endif
 
 
-/*Variable public*/
+//Variable public
 #define MAX_THREAD (65536)
 #define BUFFER_SIZE (8 * 1024)	//8 KB
+#define SSL_CONNECT_SLEEP (20)  //milisec
 
 #endif // SOCKETHEADER_H

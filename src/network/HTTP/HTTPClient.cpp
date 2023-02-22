@@ -332,6 +332,8 @@ void HTTPClient::ReceiveHTTPResponse()
             }
             return;
         }
+    }else{
+        OnConnectFailed("handshake failed", ISINVALID);
     }
 
     Close();

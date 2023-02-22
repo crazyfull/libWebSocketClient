@@ -6,15 +6,11 @@ using namespace std;
 #include <stdlib.h>
 #include <stdio.h>
 #include <WebSocketClient/WebSocketClient.h>
-#include <WebSocketClient/src/log.h>
-
-
-#include <functional>
 #include <iostream>
 
 
 void onMessageCallback(WebSocketClient *WebSocket, const WSMessage &message) {
-    LOG("onMessageCallback: [%s][%u]", message.Data.c_str(), message.MessageType);
+    printf("onMessageCallback: [%s][%u]\n", message.Data.c_str(), message.MessageType);
 
     if(message.MessageType == WSMessageType::TEXT_UTF8){
        // WebSocket.SendMessage("onMessageCallback");
@@ -22,30 +18,29 @@ void onMessageCallback(WebSocketClient *WebSocket, const WSMessage &message) {
 
     if(message.MessageType == WSMessageType::PING){
         WebSocket->SendPong(message.Data);
-        LOG("SendPong: [%s]", message.Data.c_str());
+        printf("SendPong: [%s]\n", message.Data.c_str());
     }
 }
 
 void onConnectCallback(WebSocketClient *WebSocket) {
-    LOG("onConnetCallback");
+    printf("onConnetCallback\n");
     WebSocket->SendMessage("onConnetCallback");
 }
 
 void onCloseCallback(WebSocketClient *WebSocket) {
-    LOG("onCloseCallback");
+    printf("onCloseCallback\n");
 }
 
 void onErrorCallback(WebSocketClient *WebSocket, WSError& err) {
-    LOG("onErrorCallback: err: [%s]", err.Msg.c_str());
+    printf("onErrorCallback: err: [%s]\n", err.Msg.c_str());
 }
 
 int main()
 {
     string strUrl = "ws://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
-    //strUrl = "wss://javascript.info/article/websocket/chat/ws";
-    //strUrl = "ws://104.26.12.17/article/websocket/chat/ws";
-    //strUrl = "wss://localhost:4433/ws";
-    strUrl = "ws://sv2.mojz.ir/ws";
+    strUrl = "wss://javascript.info/article/websocket/chat/ws";
+    strUrl = "wss://localhost:7547/ws";
+    strUrl = "ws://198.244.144.183/ws";
 
     WebSocketClient WebSocket;
     WebSocket.onMessage(onMessageCallback);
@@ -53,14 +48,14 @@ int main()
     WebSocket.onClose(onCloseCallback);
     WebSocket.onError(onErrorCallback); 
     WebSocket.setUsingMask(true);
-    WebSocket.setDisableCertificateValidation(true);
+    WebSocket.setDisableCertificateValidation(false);
+
 
     //connect to target
     WebSocket.Connect(strUrl);
 
     /*
     WebSocket.onMessage([](WebSocketClient *WebSocket, WSMessage msg){
-        //Serial.println("Got Message: " + msg.data());
         LOG("onMessage: [%s]", msg.Data.c_str());
     });
     */

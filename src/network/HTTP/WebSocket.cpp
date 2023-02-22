@@ -147,8 +147,7 @@ void WebSocket::OnWSocketReceiveData(const char *Buffer, int Length)
 
 void WebSocket::WSSendPck(const char *Message, uint64_t MessageLength, bool useMask, const WSMessageType &opcode)
 {
-    if(!Message || MessageLength == 0)
-        return; //empty message
+    //if(!Message || MessageLength == 0)    return;
 
     WSFrame frm;
     WSHeaderBuffer HeaderBuff;

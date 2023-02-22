@@ -9,6 +9,11 @@ WebSocketClient::WebSocketClient()//: _messagesCallback([](WSClient*, WSMessage)
     setConnected(false);
 }
 
+WebSocketClient::~WebSocketClient()
+{
+    Close(false);
+}
+
 bool WebSocketClient::usingMask() const
 {
     return m_usingMask;
@@ -85,8 +90,12 @@ void WebSocketClient::OnWSocketConnected()
 }
 
 
-void WebSocketClient::Connect(const string &url)
+void WebSocketClient::Connect(const string &url, TCPConnectTimeout timeout)
 {
+    //set timeout for connect
+    setTimeOut(timeout);
+
+    //connect to target
     WebSocket::Connect(url);
 }
 

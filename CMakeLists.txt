@@ -1,15 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.7
+    VERSION 1.1.8
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-#add_definitions(-D USE_LIBEVENT)
 #add_definitions(-D USE_OPENSSL)
 
 if(UNIX)
@@ -36,16 +34,7 @@ IF(WIN32)
 ENDIF()
 
 
-#include_directories(
-#    "${PROJECT_SOURCE_DIR}/src"
-#    "${PROJECT_SOURCE_DIR}/src/network"
-#    "${PROJECT_SOURCE_DIR}/src/base64"
-#    "/src/base64"
-#    "/src/network"
-#    "/src/network/HTTP"
-#    "/src/network/SSL"
-#)
-
+# maybe need for win32
 # include_directories("${PROJECT_SOURCE_DIR}/src")
 
 set(SOURCES ${SOURCES}
@@ -89,11 +78,6 @@ endif()
 set_target_properties(libWebSocketClient PROPERTIES OUTPUT_NAME "WebSocketClient")
 
 
-if(WIN32)
-    # set(LIB_PLATFORM ws2_32 shell32 advapi32)
-    # include_directories(./WIN32-Code)
-endif()
-
 # Install headers
 #install(FILES ${HEADERS}
 #    DESTINATION "${INSTALL_INC_DIR}"
@@ -128,8 +112,6 @@ install(TARGETS libWebSocketClient libWebSocketClient
 )
 endif()
 
-#install (DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h*")
-
 target_compile_definitions(libWebSocketClient PRIVATE LIBWEBSOCKETCLIENT_LIBRARY)
 
 message(STATUS "Project:
@@ -155,6 +137,6 @@ endif()
 
 
 
-#disable log messages
+## for disable log messages
 #NO_NEED_DEBUG
 #NO_NEED_LOG

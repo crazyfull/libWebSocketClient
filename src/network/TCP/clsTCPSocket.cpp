@@ -1,6 +1,5 @@
 #include "clsTCPSocket.h"
 #include <math.h>       /* floor */
-#include <thread>
 #include "src/log.h"
 
 #ifdef USE_OPENSSL
@@ -35,7 +34,8 @@ TCPSocket::TCPSocket()
 
 TCPSocket::~TCPSocket()
 {
-
+    TerminateThread();
+    freeSSL();
 }
 
 void TCPSocket::OnConnectFailed(const char* msg, int errCode)
@@ -83,6 +83,21 @@ bool TCPSocket::LoadNewSocket()
 #endif
     return true;
 }
+
+void TCPSocket::TerminateThread(){
+    uint64_t thID = m_Thread.native_handle();
+    if(thID > 0){
+#ifdef _WIN32
+        //in win32
+        //TerminateThread(tr.native_handle(), 1);
+#else
+        pthread_cancel(thID);
+#endif
+        //pinThread->detach();
+        m_Thread.join();
+    }
+}
+
 
 in_addr TCPSocket::getIPFromHostAddress(const char *HostAddress)
 {
@@ -175,6 +190,34 @@ void TCPSocket::SetSocketBlockingMode(int fd)
 }
 
 
+
+int TCPSocket::GetSocketConnectTimeout(int fd)
+{
+    int retRyCount = 0;
+    socklen_t len = sizeof(int);
+    getsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, &retRyCount, &len);
+    return retRyCount;
+}
+void TCPSocket::SetSocketConnectTimeout(int fd, TCPConnectTimeout Timeout)
+{
+    //5: 66sec , 4: 32sec, 3: 15sec, 2: 7sec, 1: 3sec
+    int synRetries = Timeout; // Send a total of 3 SYN packets => Timeout ~7s
+    int isErr = setsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, &synRetries, sizeof(synRetries));
+    if(isErr != 0){
+        DebugPrint("error setsockopt set flag TCP_SYNCNT, error[%d]", ERRNO);
+    }
+
+/*
+    struct timeval timeout;
+    timeout.tv_sec  = 1;  // after 7 seconds connect() will timeout
+    timeout.tv_usec = 0;
+    int isErr = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    if(isErr != 0)
+    {
+        DebugPrint("error setsockopt set flag SO_LINGER, error[%d]", ERRNO);
+    }
+*/
+}
 
 void TCPSocket::SetKeepAlive(int fd, bool isActive)
 {
@@ -273,6 +316,7 @@ TCPSocketStatus TCPSocket::getStatus() const
     return m_Status;
 }
 
+
 bool TCPSocket::ConnectToHost(const char *HostAddress, uint16_t Port, bool usingSSL)
 {
     if(m_Status != Closed){
@@ -296,15 +340,7 @@ bool TCPSocket::ConnectToHost(const char *HostAddress, uint16_t Port, bool using
     setStatus(Connecting);
     OnConnecting();
 
-/*
-    std::async([this]()
-    {
-        onThread(this);
-    });
-*/
-
-    std::thread thread(onThread, this);
-    thread.detach();
+    m_Thread = thread(onThread, this);
     return true;
 }
 
@@ -318,16 +354,58 @@ uint16_t TCPSocket::TargetPort() const
     return m_TargetPort;
 }
 
+uint32_t TCPSocket::TimeOut() const
+{
+    uint32_t ret;
+    switch (m_TimeOut) {
+    case TIMEOUT_3_Sec:
+        ret = 3;
+        break;
+    case TIMEOUT_7_Sec:
+        ret = 7;
+        break;
+    case TIMEOUT_15_Sec:
+        ret = 15;
+        break;
+    case TIMEOUT_32_Sec:
+        ret = 32;
+        break;
+    case TIMEOUT_66_Sec:
+        ret = 66;
+        break;
+    case TIMEOUT_132_Sec:
+        ret = 132;
+        break;
+    default:
+        ret = 35;
+        break;
+    }
+
+    ret *= 1000;
+    return ret;
+}
+
+void TCPSocket::setTimeOut(TCPConnectTimeout newTimeOut)
+{
+    m_TimeOut = newTimeOut;
+}
+
+void TCPSocket::onThread(void *p)
+{
+    TCPSocket *pThis = static_cast<TCPSocket*>(p);
+    pThis->_onConnecting();
+}
+
+/*
 void *TCPSocket::onThread(void *p)
 {
     TCPSocket *pThis = static_cast<TCPSocket*>(p);
     pThis->_onConnecting();
     return 0;
-}
+}*/
 
 void TCPSocket::_onConnecting()
 {
-
     bool isConnect = onConnect();
     if(isConnect == true){
         onReceiving();
@@ -398,7 +476,6 @@ static int cert_verify_callback(X509_STORE_CTX *x509_ctx, void *arg)
 
 CONNECTRESULT TCPSocket::onConnect()
 {
-
     //load socket
     if(LoadNewSocket() == false){
         OnConnectFailed("cannot init socket!", ERRNO);
@@ -417,7 +494,7 @@ CONNECTRESULT TCPSocket::onConnect()
     TCPSocket::SetSocketResourceAddr(m_socket, true);
 
     //set blocking mode
-    TCPSocket::SetSocketBlockingMode(m_socket);
+    //TCPSocket::SetSocketBlockingMode(m_socket);
 
     //get ip address -- Blocking method
     in_addr IPAddress = getIPFromHostAddress(m_TargetHost.c_str());
@@ -433,6 +510,9 @@ CONNECTRESULT TCPSocket::onConnect()
     remoteaddr.sin_family = AF_INET;
     remoteaddr.sin_port = htons(m_TargetPort);
     remoteaddr.sin_addr = IPAddress;
+
+    //set timeout
+    SetSocketConnectTimeout(m_socket, m_TimeOut);
 
     int isConnect = connect(m_socket, (sockaddr*)&remoteaddr, sizeof(remoteaddr));
 
@@ -454,12 +534,15 @@ CONNECTRESULT TCPSocket::onConnect()
             return CONNECTRESULT::getError;
         }
 
+
+
         // Use only TLS v1 or later.
         const long flags = SSL_OP_ALL | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_COMPRESSION;
         SSL_CTX_set_options(m_pCTXClient, flags);
+        //SSL_CTX_set_mode(m_pCTXClient,  SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
         SSL_CTX_set_default_verify_paths(m_pCTXClient);
         //SSL_CTX_load_verify_locations(m_pCTXClient, NULL, "/etc/ssl/certs/");
-
+        //SSL_CTX_set_timeout(m_pCTXClient, 60);
 
         //using with my cert
         const char *crt = nullptr;
@@ -514,19 +597,40 @@ CONNECTRESULT TCPSocket::onConnect()
         SSL_set_fd(m_pSSL, m_socket);
         SSL_set_mode(m_pSSL, SSL_MODE_AUTO_RETRY);
 
-        int result = SSL_connect( m_pSSL );
-        if ( result < 1 ) {
-            int err = SSL_get_error(m_pSSL, result);
-            if(err == SSL_ERROR_SSL){
+        //set non-blocking socket
+        SetSocketNonBlocking(m_socket);
 
+
+        int tout = 0;
+        int result;
+        while (1) {
+            result = SSL_connect( m_pSSL );
+            if ( result < 1 ) {
+                int err = SSL_get_error(m_pSSL, result);
+                if(err == SSL_ERROR_WANT_READ){
+                    //LOG("goto SSL_connect %d", tout);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(SSL_CONNECT_SLEEP));
+                    tout += SSL_CONNECT_SLEEP;
+                    if(tout >= TimeOut()){
+                        //error
+                        OnConnectFailed("Could not complete SSL handshake, timeout", ISINVALID);
+                        Close();
+                        return CONNECTRESULT::getError;
+                    }
+                    continue;
+                }
+                //DebugPrint("SSL_connect result[%d] err[%d] msg[%s]", result, err, ERR_error_string(ERR_get_error(), NULL));
+                OnConnectFailed("Could not complete SSL handshake", err);
+                Close();
+                return CONNECTRESULT::getError;
+            }else{
+                //connected
+                break;
             }
-
-            //DebugPrint("SSL_connect result[%d] err[%d] msg[%s]", result, err, ERR_error_string(ERR_get_error(), NULL));
-            OnConnectFailed("failing to verify server's certificate", -1);
-            Close();
-            return CONNECTRESULT::getError;
         }
 
+        //set blocking socket
+        SetSocketBlockingMode(m_socket);
 
         long verfyres = SSL_get_verify_result(m_pSSL);
         if(verfyres != X509_V_OK){
@@ -567,7 +671,7 @@ void TCPSocket::onReceiving()
         }
         */
 
-        char recBuffer[BUFFER_SIZE+1];
+        char recBuffer[BUFFER_SIZE+1] = {0};
         int bytesSent = 0;
         if(m_pSSL){
 #ifdef USE_OPENSSL
@@ -596,23 +700,24 @@ void TCPSocket::onReceiving()
         OnReceiveData(recBuffer, bytesRec);
 
     } while( bytesRec > 0 );
+
 }
 
 void TCPSocket::freeSSL()
 {
 #ifdef USE_OPENSSL
-    if (m_pCTXClient){
-        SSL_CTX_free(m_pCTXClient);
-        m_pCTXClient = nullptr;
-    }
-
     if (m_pSSL){
         SSL_shutdown( m_pSSL );
         SSL_free( m_pSSL );
         m_pSSL = nullptr;
     }
-#endif
 
+    if (m_pCTXClient){
+        SSL_CTX_free(m_pCTXClient);
+        m_pCTXClient = nullptr;
+    }
+
+#endif
 }
 
 int TCPSocket::Send(const char *Buffer, int Length)
@@ -642,36 +747,29 @@ int TCPSocket::Send(const char *Buffer, int Length)
 
 void TCPSocket::Close(bool isShutDown)
 {
-
-    if (m_Status == Closed || m_Status == Closing) {
+    if (m_Status == Closed || m_Status == Closing)
         return;
-    }
 
+    //close and free ssl
     freeSSL();
 
-    if(m_socket == ISINVALID || m_socket == 0){
+    if(m_socket == ISINVALID || m_socket == 0)
         return;
-    }
-
-
 
     //change status...
     setStatus(Closing);
 
-
-    /* */
-    if(m_socket == ISINVALID || m_socket == 0){
+    /*
+    if(m_socket == ISINVALID || m_socket == 0)
         return;
-    }
+*/
 
     //
     //OnConnectorClosed();
 
-
     if(isShutDown == true){
         shutdown(m_socket, 2);
     }
-
 
     close(m_socket);
 

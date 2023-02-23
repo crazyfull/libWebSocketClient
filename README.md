@@ -10,8 +10,11 @@ A simple and powerful websocket client library with the least dependency for c++
    - Portable
    - Cross platform
    - Easy to use
-   
-**How to build on linux**
+   - ...
+  
+
+## How to Build?
+**Build on Linux**
 ```
 $ cmake -B build -S . -D USE_OPENSSL=1
 
@@ -20,9 +23,14 @@ $ cd build
 $ sudo make install
 ```
 
-**How to build on windows**
+**Build on Windows**
 ```
 $ cmake -B build -S . -G "Visual Studio 14 2015" -D USE_OPENSSL=0
+```
+
+## How to Use?
+```
+comming soon!
 ```
 
 ## Need more information?

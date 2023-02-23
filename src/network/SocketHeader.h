@@ -12,6 +12,10 @@
     #pragma comment(lib, "ws2_32.lib")
     #define SO_SOCKETSHARED    SO_BROADCAST
 
+#ifndef TCP_SYNCNT
+#define TCP_SYNCNT        7
+#endif
+
 #else //#ifdef __unix__ //__linux__
     //Socket in unix
     #include <sys/socket.h>

@@ -191,20 +191,18 @@ void TCPSocket::SetSocketBlockingMode(int fd)
 #endif
 }
 
-
-
 int TCPSocket::GetSocketConnectTimeout(int fd)
 {
     int retRyCount = 0;
     socklen_t len = sizeof(int);
-    getsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, &retRyCount, &len);
+    getsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, (char*)&retRyCount, &len);
     return retRyCount;
 }
 void TCPSocket::SetSocketConnectTimeout(int fd, TCPConnectTimeout Timeout)
 {
     //5: 66sec , 4: 32sec, 3: 15sec, 2: 7sec, 1: 3sec
     int synRetries = Timeout; // Send a total of 3 SYN packets => Timeout ~7s
-    int isErr = setsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, &synRetries, sizeof(synRetries));
+    int isErr = setsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, (char*)&synRetries, sizeof(synRetries));
     if(isErr != 0){
         DebugPrint("error setsockopt set flag TCP_SYNCNT, error[%d]", ERRNO);
     }

@@ -69,7 +69,7 @@ private:
     void onReceiving();
 
     void freeSSL();
-    void TerminateThread();
+    void killThread();
 
 protected:
     void setTimeOut(TCPConnectTimeout newTimeOut);

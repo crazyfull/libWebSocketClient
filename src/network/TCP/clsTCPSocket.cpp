@@ -34,7 +34,7 @@ TCPSocket::TCPSocket()
 
 TCPSocket::~TCPSocket()
 {
-    TerminateThread();
+    killThread();
     freeSSL();
 }
 
@@ -75,8 +75,7 @@ bool TCPSocket::LoadNewSocket()
     int answer;
     WSADATA wsaData;
     answer = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if(answer < 0)
-    {
+    if(answer < 0){
         DebugPrint("Error On Load Socket");
         return false;
     }
@@ -84,18 +83,21 @@ bool TCPSocket::LoadNewSocket()
     return true;
 }
 
-void TCPSocket::TerminateThread(){
-    uint64_t thID = m_Thread.native_handle();
-    if(thID > 0){
+void TCPSocket::killThread(){
+    std::thread::native_handle_type thID = m_Thread.native_handle();
+
 #ifdef _WIN32
-        //in win32
-        //TerminateThread(tr.native_handle(), 1);
-#else
-        pthread_cancel(thID);
-#endif
-        //pinThread->detach();
+    //in win32
+    if(thID){
+        TerminateThread(thID, 1);
         m_Thread.join();
     }
+#else
+    if(thID > 0){
+        pthread_cancel(thID);
+        m_Thread.join();
+    }
+#endif
 }
 
 
@@ -207,7 +209,7 @@ void TCPSocket::SetSocketConnectTimeout(int fd, TCPConnectTimeout Timeout)
         DebugPrint("error setsockopt set flag TCP_SYNCNT, error[%d]", ERRNO);
     }
 
-/*
+    /*
     struct timeval timeout;
     timeout.tv_sec  = 1;  // after 7 seconds connect() will timeout
     timeout.tv_usec = 0;

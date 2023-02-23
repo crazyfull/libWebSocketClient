@@ -299,23 +299,10 @@ void TCPSocket::setStatus(const TCPSocketStatus &value)
     m_Status = value;
 }
 
-/*
-void clsTCPSocket::MutexLock()
-{
-    pthread_mutex_lock(&m_Mutex);
-}
-
-void clsTCPSocket::MutexUnlock()
-{
-    pthread_mutex_unlock(&m_Mutex);
-}
-*/
-
 TCPSocketStatus TCPSocket::getStatus() const
 {
     return m_Status;
 }
-
 
 bool TCPSocket::ConnectToHost(const char *HostAddress, uint16_t Port, bool usingSSL)
 {
@@ -656,7 +643,7 @@ CONNECTRESULT TCPSocket::onConnect()
 
 void TCPSocket::onReceiving()
 {
-    int bytesRec;
+    int bytesRec = 0;
     do {
 
         if(m_Status != Connected){
@@ -672,7 +659,6 @@ void TCPSocket::onReceiving()
         */
 
         char recBuffer[BUFFER_SIZE+1] = {0};
-        int bytesSent = 0;
         if(m_pSSL){
 #ifdef USE_OPENSSL
             bytesRec = SSL_read(m_pSSL, recBuffer , BUFFER_SIZE);
@@ -685,7 +671,7 @@ void TCPSocket::onReceiving()
         //socket closed
         if(bytesRec == 0){
             Close();
-            return;
+            break;
         }
 
         //socket error
@@ -693,6 +679,7 @@ void TCPSocket::onReceiving()
         {
             //DebugPrint("recv failed socket: %d, err(%d)", m_socket, ERRNO);
             Close();
+            break;
         }
 
         //

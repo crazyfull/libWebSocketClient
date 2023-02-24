@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.20
+    VERSION 1.1.21
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #add_definitions(-D USE_OPENSSL)
-option(BUILD_SHARED_LIBS ON)
+option(BUILD_SHARED_LIBS "Build shared librarie" ON)
 
 
 if(UNIX)

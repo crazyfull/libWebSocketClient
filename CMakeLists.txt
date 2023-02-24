@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.19
+    VERSION 1.1.20
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #add_definitions(-D USE_OPENSSL)
+option(BUILD_SHARED_LIBS ON)
+
 
 if(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
@@ -28,9 +30,11 @@ endif()
 
 #for static build on MSVC
 IF(WIN32)
-    link_libraries(libucrt.lib libucrtd.lib libvcruntime.lib)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    if(BUILD_SHARED_LIBS)
+        link_libraries(libucrt.lib libucrtd.lib libvcruntime.lib)
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    endif()
 ENDIF()
 
 
@@ -66,10 +70,11 @@ set(HEADERS ${HEADERS}
 )
 
 #
-add_library(libWebSocketClient STATIC
-    ${SOURCES}
-    ${HEADERS}
-)
+if(BUILD_SHARED_LIBS)
+    add_library(libWebSocketClient SHARED ${SOURCES} ${HEADERS})
+else()
+    add_library(libWebSocketClient STATIC ${SOURCES} ${HEADERS})
+endif()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     #message("Release mode")
@@ -115,6 +120,7 @@ endif()
 target_compile_definitions(libWebSocketClient PRIVATE LIBWEBSOCKETCLIENT_LIBRARY)
 
 message(STATUS "Project:
+    Build shared:               ${BUILD_SHARED_LIBS}
     library name:               ${PROJECT_NAME}
     library description:        ${PROJECT_DESCRIPTION}
     library version:            ${PROJECT_VERSION}

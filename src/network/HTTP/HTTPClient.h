@@ -27,7 +27,7 @@ struct URL{
 class HTTPClient: protected TCPSocket
 {
 private:
-    HTTPHeaderFields m_HeaderFields;
+    HTTPheaderFields m_HeaderFields;
     HTTPProtocole m_HTTPProtocolType;
     HTTP_Parsing_Result m_ParsingResult;
     string m_Cache;
@@ -43,6 +43,12 @@ private:
 
     void ReceiveHTTPResponse();
 
+    static bool isCompleteHeader(const char *HTTPBuffer, int HTTPBufferSize);
+    static bool isHTTPProtocol(const char *HTTPBuffer, int HTTPBufferSize);
+    static long StringToNumber(const char *source);
+    static int getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize);
+    static int ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHeaderFields);
+    static string getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int headerSize);
 public:
     HTTPClient();
 

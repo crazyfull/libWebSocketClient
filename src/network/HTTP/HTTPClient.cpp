@@ -140,7 +140,7 @@ void HTTPClient::OnConnected()
 }
 
 
-bool isCompleteHeader(const char *HTTPBuffer, int HTTPBufferSize)
+bool HTTPClient::isCompleteHeader(const char *HTTPBuffer, int HTTPBufferSize)
 {
     if(HTTPBufferSize == 0 || HTTPBufferSize == -1){
         return false;
@@ -157,7 +157,7 @@ bool isCompleteHeader(const char *HTTPBuffer, int HTTPBufferSize)
     return false;
 }
 
-bool isHTTPProtocol(const char *HTTPBuffer, int HTTPBufferSize){
+bool HTTPClient::isHTTPProtocol(const char *HTTPBuffer, int HTTPBufferSize){
     if(HTTPBufferSize > 10){
         const char *signature = "HTTP/";
         for(size_t i = 0; i < strlen(signature);i++){
@@ -169,7 +169,7 @@ bool isHTTPProtocol(const char *HTTPBuffer, int HTTPBufferSize){
     return true;
 }
 
-long StringToNumber(const char *source)
+long HTTPClient::StringToNumber(const char *source)
 {
     long ret = 0;
     if(source){
@@ -178,7 +178,7 @@ long StringToNumber(const char *source)
     return ret;
 }
 
-int getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize){
+int HTTPClient::getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize){
     int index = strcspn(HTTPBuffer, " ");
     if(index == HTTPBufferSize){
         return ISINVALID;
@@ -201,7 +201,7 @@ int getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize){
     return StringToNumber(statusStr);
 }
 
-int ParseHeaderFields(const char *HTTPBuffer, HTTPHeaderFields *pHeaderFields)
+int HTTPClient::ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHeaderFields)
 {
     int NameSize = 0;
     char *Name;
@@ -268,7 +268,7 @@ int HTTPClient::GetHeaderFieldCount() const
     return m_HeaderFields.Count();
 }
 
-string getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int headerSize){
+string HTTPClient::getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int headerSize){
     string ret;
     int bodyin = HTTPBufferSize - headerSize;
     if(bodyin > 0){

@@ -11,7 +11,7 @@ struct Content
     string Value;
 };
 
-class HTTPHeaderFields
+class HTTPheaderFields
 {
 private:
 
@@ -19,7 +19,7 @@ private:
     Content Fields[MAX_HTTP_HEADER_FIELDS];
 
 public:
-    HTTPHeaderFields();
+    HTTPheaderFields();
     int16_t Count() const;
     const string GetFieldByName(const char *Name) const;
     bool _AddField(const char *Name, int NameSize, const char *Value, int ValueSize);

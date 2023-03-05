@@ -1,11 +1,11 @@
 #include "HTTPHeaderFields.h"
 
-HTTPHeaderFields::HTTPHeaderFields()
+HTTPheaderFields::HTTPheaderFields()
 {
     Index = 0;
 }
 
-bool HTTPHeaderFields::_AddField(const char *Name, int NameSize, const char *Value, int ValueSize)
+bool HTTPheaderFields::_AddField(const char *Name, int NameSize, const char *Value, int ValueSize)
 {
     if(Index < MAX_HTTP_HEADER_FIELDS)
     {
@@ -17,7 +17,7 @@ bool HTTPHeaderFields::_AddField(const char *Name, int NameSize, const char *Val
     return false;
 }
 
-const string HTTPHeaderFields::GetFieldByName(const char *Name) const
+const string HTTPheaderFields::GetFieldByName(const char *Name) const
 {
     string ret;
     for (int i = 0; i < Index; ++i)
@@ -30,7 +30,7 @@ const string HTTPHeaderFields::GetFieldByName(const char *Name) const
     return ret;
 }
 
-int16_t HTTPHeaderFields::Count() const
+int16_t HTTPheaderFields::Count() const
 {
     return Index;
 }

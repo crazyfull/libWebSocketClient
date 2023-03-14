@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.22
+    VERSION 1.1.24
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -43,7 +43,7 @@ ENDIF()
 
 set(SOURCES ${SOURCES}
     WebSocketClient.cpp
-    src/network/TCP/clsTCPSocket.cpp
+    src/network/TCP/TCPSocket.cpp
     src/network/SSL/openssl_hostname_validation.cpp
     src/network/SSL/hostcheck.cpp
     src/network/HTTP/WSocketHeader.cpp
@@ -58,7 +58,7 @@ set(HEADERS ${HEADERS}
     WebSocketClient.h
     src/log.h
     src/network/SocketHeader.h
-    src/network/TCP/clsTCPSocket.h
+    src/network/TCP/TCPSocket.h
     src/network/SSL/openssl_hostname_validation.h
     src/network/SSL/hostcheck.h
     src/network/HTTP/WSocketHeader.h
@@ -95,7 +95,7 @@ install(FILES src/log.h DESTINATION "${INSTALL_INC_DIR}/src")
 install(FILES
     src/network/SocketHeader.h
     DESTINATION "${INSTALL_INC_DIR}/src/network")
-install(FILES src/network/TCP/clsTCPSocket.h DESTINATION "${INSTALL_INC_DIR}/src/network/TCP")
+install(FILES src/network/TCP/TCPSocket.h DESTINATION "${INSTALL_INC_DIR}/src/network/TCP")
 install(FILES
     src/network/SSL/openssl_hostname_validation.h
     src/network/SSL/hostcheck.h

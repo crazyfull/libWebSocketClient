@@ -1,4 +1,4 @@
-#include "clsTCPSocket.h"
+#include "TCPSocket.h"
 #include <math.h>       /* floor */
 #include "src/log.h"
 
@@ -198,7 +198,7 @@ int TCPSocket::GetSocketConnectTimeout(int fd)
     getsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, (char*)&retRyCount, &len);
     return retRyCount;
 }
-void TCPSocket::SetSocketConnectTimeout(int fd, TCPConnectTimeout Timeout)
+void TCPSocket::SetSocketConnectTimeout(int fd, TCPCONNECTION_TIMEOUT Timeout)
 {
     //5: 66sec , 4: 32sec, 3: 15sec, 2: 7sec, 1: 3sec
     int synRetries = Timeout; // Send a total of 3 SYN packets => Timeout ~7s
@@ -294,12 +294,12 @@ bool TCPSocket::isSocketHaveError()
     return false;
 }
 
-void TCPSocket::setStatus(const TCPSocketStatus &value)
+void TCPSocket::setStatus(const TCPSOCKET_STATUS &value)
 {
     m_Status = value;
 }
 
-TCPSocketStatus TCPSocket::getStatus() const
+TCPSOCKET_STATUS TCPSocket::getStatus() const
 {
     return m_Status;
 }
@@ -372,7 +372,7 @@ uint32_t TCPSocket::TimeOut() const
     return ret;
 }
 
-void TCPSocket::setTimeOut(TCPConnectTimeout newTimeOut)
+void TCPSocket::setTimeOut(TCPCONNECTION_TIMEOUT newTimeOut)
 {
     m_TimeOut = newTimeOut;
 }

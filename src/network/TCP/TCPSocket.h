@@ -1,5 +1,5 @@
-#ifndef CLSTCPSOCKET_H
-#define CLSTCPSOCKET_H
+#ifndef TCPSOCKET_H
+#define TCPSOCKET_H
 #include "../SocketHeader.h"
 #include <iostream>
 #include <thread>
@@ -13,7 +13,7 @@ class SSL_CTX;
 class SSL;
 #endif
 
-enum TCPSocketStatus {
+enum TCPSOCKET_STATUS {
     Closed = 1
     , Closing = 2
     , Connecting = 3
@@ -21,7 +21,7 @@ enum TCPSocketStatus {
     , Connected = 5
 };
 
-enum TCPConnectTimeout
+enum TCPCONNECTION_TIMEOUT
 {
     TIMEOUT_3_Sec = 1,
     TIMEOUT_7_Sec = 2,
@@ -42,11 +42,11 @@ class TCPSocket
 private:
     //variable
     int m_socket;
-    TCPSocketStatus m_Status;
+    TCPSOCKET_STATUS m_Status;
     std::thread m_Thread;
     string m_TargetHost;
     uint16_t m_TargetPort;
-    TCPConnectTimeout m_TimeOut;
+    TCPCONNECTION_TIMEOUT m_TimeOut;
     SSL_CTX *m_pCTXClient;
     SSL *m_pSSL;
     bool m_IgnoreCertCheck;
@@ -60,9 +60,9 @@ private:
     static void SetSocketNonBlocking(int fd);
     static void SetSocketBlockingMode(int fd);
     static void SetKeepAlive(int fd, bool isActive);
-    static void SetSocketConnectTimeout(int fd, TCPConnectTimeout Timeout);
+    static void SetSocketConnectTimeout(int fd, TCPCONNECTION_TIMEOUT Timeout);
 
-    void setStatus(const TCPSocketStatus &value);
+    void setStatus(const TCPSOCKET_STATUS &value);
 
     bool LoadNewSocket();
     CONNECTRESULT onConnect();
@@ -72,7 +72,7 @@ private:
     void killThread();
 
 protected:
-    void setTimeOut(TCPConnectTimeout newTimeOut);
+    void setTimeOut(TCPCONNECTION_TIMEOUT newTimeOut);
 
 public:
     TCPSocket();
@@ -98,7 +98,7 @@ public:
 
     bool isSocketHaveError();
     bool isReadyForDelete() const;
-    TCPSocketStatus getStatus() const;
+    TCPSOCKET_STATUS getStatus() const;
     int getSocket() const;
 
 
@@ -110,4 +110,4 @@ public:
 
 };
 
-#endif // CLSTCPSOCKET_H
+#endif // TCPSOCKET_H

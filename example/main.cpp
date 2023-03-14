@@ -37,10 +37,7 @@ void onErrorCallback(WebSocketClient *WebSocket, WSError& err) {
 
 int main()
 {
-    string strUrl = "ws://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
-    strUrl = "wss://javascript.info/article/websocket/chat/ws";
-    strUrl = "wss://localhost:7547/ws";
-    strUrl = "ws://198.244.144.183/ws";
+    string strUrl = "wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
 
     WebSocketClient WebSocket;
     WebSocket.onMessage(onMessageCallback);
@@ -54,14 +51,17 @@ int main()
     //connect to target
     WebSocket.Connect(strUrl);
 
-    /*
+
     WebSocket.onMessage([](WebSocketClient *WebSocket, WSMessage msg){
-        LOG("onMessage: [%s]", msg.Data.c_str());
+
+        if(msg.MessageType == WSMessageType::TEXT_UTF8){
+            printf("Get new Messages: [%s]", msg.Data.c_str());
+        }
     });
-    */
+
 
     getchar();
-    WebSocket.SendMessage("im message");
+    WebSocket.SendMessage("hi of WebSocketClient");
 
     getchar();
     WebSocket.SendPing("im ping");

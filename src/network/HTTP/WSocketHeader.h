@@ -60,6 +60,9 @@ public:
     static void GenerateMaskey(char *key);
     static void SetMaskey(uint8_t *Buffer, char *key);
     static void GenerateHeader(WSHeaderBuffer &HeaderBuffer, WSFrame *pFrame, const char *Payload);
+private:
+    static uint64_t GetPacketSize64(const char *Buffer);
+    static uint16_t GetPacketSize16(const char *Buffer);
 };
 
 #endif // WSOCKETHEADER_H

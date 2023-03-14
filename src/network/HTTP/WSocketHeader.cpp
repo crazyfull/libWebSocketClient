@@ -12,7 +12,7 @@ void WSocketHeader::Clear()
     memset(&m_Frame, 0, sizeof(m_Frame));
 }
 
-uint64_t GetPacketSize64(const char* Buffer)
+uint64_t WSocketHeader::GetPacketSize64(const char* Buffer)
 {
     uint64_t ret = 0;
     int Len =  sizeof(uint64_t);
@@ -26,7 +26,7 @@ uint64_t GetPacketSize64(const char* Buffer)
     return ret;
 }
 
-uint16_t GetPacketSize16(const char *Buffer)
+uint16_t WSocketHeader::GetPacketSize16(const char *Buffer)
 {
     uint16_t ret = 0;
     uint8_t *strRet = (uint8_t*)&ret;

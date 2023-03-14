@@ -1,7 +1,7 @@
 #ifndef HTTPCLIENT_H
 #define HTTPCLIENT_H
 #include "../HTTP/HTTPHeaderFields.h"
-#include "../TCP/clsTCPSocket.h"
+#include "../TCP/TCPSocket.h"
 
 #define MAX_HEADER_LENGTH 2*1000 //2KB
 
@@ -11,7 +11,7 @@ enum HTTP_Parsing_Result{
     IT_UNCOMPLETED = 3,
 };
 
-enum HTTPProtocole{
+enum HTTPProtocol{
     HTTP = 1,
     HTTPS = 2,
     WEBSocket = 3
@@ -28,7 +28,7 @@ class HTTPClient: protected TCPSocket
 {
 private:
     HTTPheaderFields m_HeaderFields;
-    HTTPProtocole m_HTTPProtocolType;
+    HTTPProtocol m_HTTPProtocolType;
     HTTP_Parsing_Result m_ParsingResult;
     string m_Cache;
     string m_Body;

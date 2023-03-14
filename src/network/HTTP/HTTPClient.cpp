@@ -8,7 +8,7 @@ long StringToNumber(const char *source);
 
 HTTPClient::HTTPClient()
 {
-    m_HTTPProtocolType = HTTPProtocole::HTTP;
+    m_HTTPProtocolType = HTTPProtocol::HTTP;
 }
 
 void HTTPClient::OnWSocketReceiveData(const char *Buffer, int Length)
@@ -86,7 +86,7 @@ void HTTPClient::OnReceiveData(const char *Buffer, int Length)
 {
     //LOG("OnReceiveData: [%s][%d]", Buffer, Length);
 
-    if(m_HTTPProtocolType == HTTPProtocole::WEBSocket){
+    if(m_HTTPProtocolType == HTTPProtocol::WEBSocket){
         OnWSocketReceiveData(Buffer, Length);
         return;
     }
@@ -321,7 +321,7 @@ void HTTPClient::ReceiveHTTPResponse()
 
         if(Upgrade.compare("websocket") == 0){
             //switch to Websocket
-            m_HTTPProtocolType = HTTPProtocole::WEBSocket;
+            m_HTTPProtocolType = HTTPProtocol::WEBSocket;
 
             //
             OnWSocketConnected();

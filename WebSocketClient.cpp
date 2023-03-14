@@ -1,5 +1,5 @@
 #include "WebSocketClient.h"
-#include "src/network/TCP/clsTCPSocket.h"
+#include "src/network/TCP/TCPSocket.h"
 
 using namespace std;
 
@@ -90,7 +90,7 @@ void WebSocketClient::OnWSocketConnected()
 }
 
 
-void WebSocketClient::Connect(const string &url, TCPConnectTimeout timeout)
+void WebSocketClient::Connect(const string &url, TCPCONNECTION_TIMEOUT timeout)
 {
     //set timeout for connect
     setTimeOut(timeout);

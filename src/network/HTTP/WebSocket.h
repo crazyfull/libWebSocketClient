@@ -1,5 +1,5 @@
-#ifndef CLSHTTPWEBSOCKET_H
-#define CLSHTTPWEBSOCKET_H
+#ifndef HTTPWEBSOCKET_H
+#define HTTPWEBSOCKET_H
 #include "WSocketHeader.h"
 #include "HTTPClient.h"
 
@@ -40,4 +40,4 @@ public:
 
 };
 
-#endif // CLSHTTPWEBSOCKET_H
+#endif // HTTPWEBSOCKET_H

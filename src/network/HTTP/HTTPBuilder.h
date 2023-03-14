@@ -4,7 +4,6 @@
 #include "HTTPClient.h"
 #include <iostream>
 #include <string.h>
-//#include <stdarg.h>
 using namespace std;
 
 class HTTPBuilder

@@ -1,7 +1,11 @@
 #ifndef WSCLIENT_H
 #define WSCLIENT_H
+#include "src/network/TCP/TCPSocket.h"
 #include "src/network/HTTP/WebSocket.h"
+#include "src/network/HTTP/WSocketHeader.h"
 #include <functional>
+#include <string>
+using namespace std;
 
 class WebSocketClient;
 
@@ -45,7 +49,7 @@ private:
 public:
     WebSocketClient();
     ~WebSocketClient();
-    void Connect(const string &url, TCPConnectTimeout timeout = TIMEOUT_32_Sec);
+    void Connect(const string &url, TCPCONNECTION_TIMEOUT timeout = TIMEOUT_32_Sec);
     bool usingMask() const;
     void setUsingMask(bool newUsingMask);
     void setDisableCertificateValidation(bool newStatus);

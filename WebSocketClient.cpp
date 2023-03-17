@@ -29,7 +29,7 @@ void WebSocketClient::setDisableCertificateValidation(bool newStatus)
     SetDisableCertificateValidation(newStatus);
 }
 
-bool WebSocketClient::Connected() const
+bool WebSocketClient::isConnected() const
 {
     return m_Connected;
 }
@@ -57,7 +57,7 @@ void WebSocketClient::OnConnecting()
 
 void WebSocketClient::OnClosed()
 {
-    if(Connected()){
+    if(isConnected()){
         setConnected(false);
 
         if(_closeCallback){
@@ -81,7 +81,7 @@ void WebSocketClient::OnWSocketMessage(const WSFrame *pFrame, const char *Payloa
 
 void WebSocketClient::OnWSocketConnected()
 {
-    if(Connected() == false)
+    if(isConnected() == false)
         setConnected(true);
 
     if(_connectCallback){

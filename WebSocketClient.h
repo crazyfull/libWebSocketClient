@@ -63,7 +63,7 @@ public:
     void onConnect(const WSConnectCallback &callback);
     void onError(const WSErrorCallback &callback);
     void onClose(const WSCloseCallback &callback);
-    bool Connected() const;
+    bool isConnected() const;
 
 };
 

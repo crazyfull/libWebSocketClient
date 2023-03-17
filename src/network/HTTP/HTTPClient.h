@@ -49,6 +49,8 @@ private:
     static int getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize);
     static int ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHeaderFields);
     static string getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int headerSize);
+
+    virtual void OnWSocketnewStatus(bool newStatus);
 public:
     HTTPClient();
 

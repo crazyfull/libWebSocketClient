@@ -81,12 +81,14 @@ void WebSocketClient::OnWSocketMessage(const WSFrame *pFrame, const char *Payloa
 
 void WebSocketClient::OnWSocketConnected()
 {
-    if(isConnected() == false)
-        setConnected(true);
-
     if(_connectCallback){
         this->_connectCallback(this);
     }
+}
+
+void WebSocketClient::OnWSocketnewStatus(bool newStatus)
+{
+    setConnected(newStatus);
 }
 
 

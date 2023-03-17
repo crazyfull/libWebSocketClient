@@ -39,6 +39,7 @@ private:
 
     void OnWSocketMessage(const WSFrame *pFrame, const char *Payload, uint64_t PayloadLength) override;
     void OnWSocketConnected() override;
+    void OnWSocketnewStatus(bool newStatus) override;
 
     //callbacks
     WSMessageCallback _messagesCallback;

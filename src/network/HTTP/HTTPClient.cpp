@@ -278,6 +278,11 @@ string HTTPClient::getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int h
     return ret;
 }
 
+void HTTPClient::OnWSocketnewStatus(bool newStatus)
+{
+    //
+}
+
 HTTP_Parsing_Result HTTPClient::parse(const char *HTTPBuffer, int HTTPBufferSize)
 {
     if(HTTPBufferSize == 0 || HTTPBufferSize == -1)
@@ -322,6 +327,9 @@ void HTTPClient::ReceiveHTTPResponse()
         if(Upgrade.compare("websocket") == 0){
             //switch to Websocket
             m_HTTPProtocolType = HTTPProtocol::WEBSocket;
+
+            //set new status connection
+            OnWSocketnewStatus(true);
 
             //
             OnWSocketConnected();

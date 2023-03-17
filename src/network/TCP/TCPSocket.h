@@ -61,7 +61,6 @@ private:
     static void SetSocketBlockingMode(int fd);
     static void SetKeepAlive(int fd, bool isActive);
     static void SetSocketConnectTimeout(int fd, TCPCONNECTION_TIMEOUT Timeout);
-
     void setStatus(const TCPSOCKET_STATUS &value);
 
     bool LoadNewSocket();
@@ -82,7 +81,6 @@ public:
     bool ConnectToHost(const char* HostAddress, uint16_t Port, bool usingSSL);
     void _onConnecting();
 
-
     int Send(const char* Buffer, int Length);
     void Close(bool isShutDown = false);
     void SetDisableCertificateValidation(bool status);
@@ -101,13 +99,9 @@ public:
     TCPSOCKET_STATUS getStatus() const;
     int getSocket() const;
 
-
     string TargetHost() const;
     uint16_t TargetPort() const;
-
-
     uint32_t TimeOut() const;
-
 };
 
 #endif // TCPSOCKET_H

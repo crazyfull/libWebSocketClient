@@ -319,6 +319,9 @@ bool TCPSocket::ConnectToHost(const char *HostAddress, uint16_t Port, bool using
         return false;
     }
 
+    if(m_Thread.native_handle() != 0)
+        killThread();
+
     //set-target address
     m_TargetPort = Port;
     m_TargetHost = HostAddress;

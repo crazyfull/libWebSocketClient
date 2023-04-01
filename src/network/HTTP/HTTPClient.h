@@ -22,21 +22,24 @@ struct URL{
     string path;
     string host;
     string port;
+    void clean();
 };
 
 class HTTPClient: protected TCPSocket
 {
 private:
-    HTTPheaderFields m_HeaderFields;
+    HTTPheaderFields *m_pHeaderFields;
     HTTPProtocol m_HTTPProtocolType;
     HTTP_Parsing_Result m_ParsingResult;
     string m_Cache;
     string m_Body;
     int m_status;
     URL m_url;
+
     //get override
     void OnReceiveData(const char* Buffer, int Length) override;
     void OnConnected() override;
+    void OnClosed() override;
 
     //
     HTTP_Parsing_Result parse(const char *HTTPBuffer, int HTTPBufferSize);
@@ -47,12 +50,16 @@ private:
     static bool isHTTPProtocol(const char *HTTPBuffer, int HTTPBufferSize);
     static long StringToNumber(const char *source);
     static int getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize);
-    static int ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHeaderFields);
+    int ParseHeaderFields(const char *HTTPBuffer);
     static string getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int headerSize);
+    void init();
+    void clean();
 
     virtual void OnWSocketnewStatus(bool newStatus);
+    virtual void OnWSocketClosed();
 public:
     HTTPClient();
+    ~HTTPClient();
 
     const string GetHeaderFieldByName(const char *Name) const;
     int GetHeaderFieldCount() const;

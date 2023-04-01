@@ -8,7 +8,35 @@ long StringToNumber(const char *source);
 
 HTTPClient::HTTPClient()
 {
+    init();
+}
+
+HTTPClient::~HTTPClient()
+{
+    clean();
+}
+
+void HTTPClient::init()
+{
     m_HTTPProtocolType = HTTPProtocol::HTTP;
+    m_ParsingResult = IT_COMPLETED;
+    m_pHeaderFields = nullptr;
+    m_status = 0;
+}
+
+void HTTPClient::clean()
+{
+    if(m_pHeaderFields){
+        delete m_pHeaderFields;
+        m_pHeaderFields = nullptr;
+    }
+
+    m_HTTPProtocolType = HTTPProtocol::HTTP;
+    m_ParsingResult = IT_COMPLETED;
+    m_status = 0;
+    m_Cache.clear();
+    m_Body.clear();
+    m_url.clean();
 }
 
 void HTTPClient::OnWSocketReceiveData(const char *Buffer, int Length)
@@ -16,6 +44,15 @@ void HTTPClient::OnWSocketReceiveData(const char *Buffer, int Length)
     //
 }
 
+void HTTPClient::OnWSocketnewStatus(bool newStatus)
+{
+    //
+}
+
+void HTTPClient::OnWSocketClosed()
+{
+    //
+}
 
 int HTTPClient::status() const
 {
@@ -58,11 +95,13 @@ URL SplitUrl(const string &urladr){
 
 void HTTPClient::Connect(const string &url)
 {
+    //LOG("Connect[%s]", url.c_str());
     m_url = SplitUrl(url);
     int targetPort = StringToNumber(m_url.port.c_str());
 
     if(m_url.protocole.compare("ws") == 0){
         ConnectToHost(m_url.host.c_str(), targetPort, false);
+        return;
     }
 
     if(m_url.protocole.compare("wss") == 0){
@@ -79,12 +118,12 @@ void HTTPClient::Connect(const string &url)
 
 void HTTPClient::OnWSocketConnected()
 {
-//
+    //
 }
 
 void HTTPClient::OnReceiveData(const char *Buffer, int Length)
 {
-    //LOG("OnReceiveData: [%s][%d]", Buffer, Length);
+   // LOG("OnReceiveData: [%s][%d]", Buffer, Length);
 
     if(m_HTTPProtocolType == HTTPProtocol::WEBSocket){
         OnWSocketReceiveData(Buffer, Length);
@@ -137,6 +176,15 @@ void HTTPClient::OnConnected()
 {
     string handshake = HTTPBuilder::GenerateGETRequest(m_url);
     Send(handshake.c_str(), handshake.length());
+}
+
+void HTTPClient::OnClosed()
+{
+    //the variables are cleaned
+    clean();
+
+    //
+    OnWSocketClosed();
 }
 
 
@@ -201,12 +249,13 @@ int HTTPClient::getHTTPStatus(const char *HTTPBuffer, int HTTPBufferSize){
     return StringToNumber(statusStr);
 }
 
-int HTTPClient::ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHeaderFields)
+int HTTPClient::ParseHeaderFields(const char *HTTPBuffer)
 {
     int NameSize = 0;
     char *Name;
-
     char *str = (char*)HTTPBuffer;
+    if(!m_pHeaderFields)
+        m_pHeaderFields = new HTTPheaderFields;
 
     size_t vPos = 0;
     size_t nPos = 1;
@@ -224,7 +273,7 @@ int HTTPClient::ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHea
                         ValueSize --;
 
                     //add-fields
-                    pHeaderFields->_AddField(Name, NameSize, Value, ValueSize);
+                    m_pHeaderFields->_AddField(Name, NameSize, Value, ValueSize);
                     nPos = 0;
                 }
             }else{
@@ -260,12 +309,15 @@ int HTTPClient::ParseHeaderFields(const char *HTTPBuffer, HTTPheaderFields *pHea
 
 const string HTTPClient::GetHeaderFieldByName(const char *Name) const
 {
-    return m_HeaderFields.GetFieldByName(Name);
+    return m_pHeaderFields->GetFieldByName(Name);
 }
 
 int HTTPClient::GetHeaderFieldCount() const
 {
-    return m_HeaderFields.Count();
+    if(m_pHeaderFields)
+        return m_pHeaderFields->Count();
+
+    return ISINVALID;
 }
 
 string HTTPClient::getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int headerSize){
@@ -276,11 +328,6 @@ string HTTPClient::getHTTPBody(const char *HTTPBuffer, int HTTPBufferSize, int h
     }
 
     return ret;
-}
-
-void HTTPClient::OnWSocketnewStatus(bool newStatus)
-{
-    //
 }
 
 HTTP_Parsing_Result HTTPClient::parse(const char *HTTPBuffer, int HTTPBufferSize)
@@ -299,7 +346,7 @@ HTTP_Parsing_Result HTTPClient::parse(const char *HTTPBuffer, int HTTPBufferSize
     m_status = getHTTPStatus(HTTPBuffer, HTTPBufferSize);
 
     //get-fields
-    int headerSize = ParseHeaderFields(HTTPBuffer, &m_HeaderFields);
+    int headerSize = ParseHeaderFields(HTTPBuffer);
 
     //get body
     if(HTTPBufferSize > headerSize){
@@ -345,4 +392,12 @@ void HTTPClient::ReceiveHTTPResponse()
     }
 
     Close();
+}
+
+void URL::clean()
+{
+    protocole.clear();
+    path.clear();
+    host.clear();
+    port.clear();
 }

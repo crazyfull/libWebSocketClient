@@ -86,7 +86,6 @@ public:
     void SetDisableCertificateValidation(bool status);
     static int GetSocketConnectTimeout(int fd);
 
-
     //overides
     virtual void OnConnectFailed(const char* msg, int errCode);
     virtual void OnConnecting();

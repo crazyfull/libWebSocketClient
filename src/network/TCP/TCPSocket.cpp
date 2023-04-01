@@ -670,7 +670,6 @@ void TCPSocket::onReceiving()
             bytesRec = recv(m_socket, recBuffer, BUFFER_SIZE, 0);
         }
 
-
         //socket closed
         if(bytesRec == 0){
             Close();

@@ -1,4 +1,5 @@
 #include "WebSocketClient.h"
+#include "src/log.h"
 #include "src/network/TCP/TCPSocket.h"
 
 using namespace std;
@@ -55,7 +56,7 @@ void WebSocketClient::OnConnecting()
 }
 
 
-void WebSocketClient::OnClosed()
+void WebSocketClient::OnWSocketClosed()
 {
     if(isConnected()){
         setConnected(false);

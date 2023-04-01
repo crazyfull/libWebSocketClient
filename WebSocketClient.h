@@ -35,8 +35,8 @@ private:
     //get overides
     void OnConnectFailed(const char* msg, int errCode) override;
     void OnConnecting() override;
-    void OnClosed() override;
 
+    void OnWSocketClosed() override;
     void OnWSocketMessage(const WSFrame *pFrame, const char *Payload, uint64_t PayloadLength) override;
     void OnWSocketConnected() override;
     void OnWSocketnewStatus(bool newStatus) override;

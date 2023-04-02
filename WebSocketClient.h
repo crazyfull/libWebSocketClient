@@ -51,6 +51,7 @@ public:
     WebSocketClient();
     ~WebSocketClient();
     void Connect(const string &url, TCPCONNECTION_TIMEOUT timeout = TIMEOUT_32_Sec);
+    void Disconnect();
     bool usingMask() const;
     void setUsingMask(bool newUsingMask);
     void setDisableCertificateValidation(bool newStatus);

@@ -102,6 +102,11 @@ void WebSocketClient::Connect(const string &url, TCPCONNECTION_TIMEOUT timeout)
     WebSocket::Connect(url);
 }
 
+void WebSocketClient::Disconnect()
+{
+   Close(true);
+}
+
 void WebSocketClient::SendMessage(const string &message)
 {
     WSPckSendMessage(message, m_usingMask);

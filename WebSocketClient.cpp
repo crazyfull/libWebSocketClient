@@ -67,7 +67,6 @@ void WebSocketClient::OnWSocketClosed()
     }else{
         //OnConnectFailed("connection closed", -1);
     }
-    //LOG("OnClosed");
 }
 
 void WebSocketClient::OnWSocketMessage(const WSFrame *pFrame, const char *Payload, uint64_t PayloadLength)

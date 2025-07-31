@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.29
+    VERSION 1.1.30
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -13,14 +13,15 @@ option(BUILD_SHARED_LIBS "Build shared librarie" ON)
 
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
-    set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall -O2")
+    set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2")
+
 
     if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        set(CMAKE_INSTALL_PREFIX "/usr/lib")
+        set(CMAKE_INSTALL_PREFIX "/usr/local")
     endif()
 
-    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation directory for libraries")
+    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
     set(INSTALL_INC_DIR "/usr/include/WebSocketClient" CACHE PATH "Installation directory for headers")
 endif()
 
@@ -136,7 +137,10 @@ message(STATUS "build options:
 if (USE_OPENSSL)
     message(STATUS "Using OpenSSL: YES")
     #using openssl
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(libWebSocketClient PRIVATE OpenSSL::SSL OpenSSL::Crypto)
     add_definitions(-D USE_OPENSSL)
+
 else()
     message(STATUS "Using OpenSSL: NO")
 endif()

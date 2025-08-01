@@ -24,7 +24,7 @@ A simple and powerful websocket client library with the least dependency for C++
 - A C++11 compatible compiler (gcc, clang, MSVC)  
 - OpenSSL development libraries (if using SSL support)
 
-### Build on Linux (Modern CMake usage)
+### Build on Unix-like systems
 
 ```bash
 cmake -B build -S . -D USE_OPENSSL=1 -D BUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
@@ -54,35 +54,35 @@ cmake -B build -S . -G "Visual Studio 14 2015" -D USE_OPENSSL=0 -D BUILD_SHARED_
 ## How to Use?
 
 ```cpp
-// Example usage (coming soon)
-#include "WebSocketClient.h"
+// Example usage
+#include <string>
+#include <cstdio>
+using namespace std;
 
 int main()
 {
     string strUrl = "wss://ws.ifelse.io";
     
-    WebSocketClient WebSocket;
-    WebSocket.onMessage(onMessageCallback);
-    WebSocket.setUsingMask(true);
-    WebSocket.setDisableCertificateValidation(false);
- 
+    WebSocketClient ws;
+    ws.setUsingMask(true);
+    ws.setDisableCertificateValidation(false);
     
-    //connect to target
-    WebSocket.Connect(strUrl);
-    
-    
-    WebSocket.onMessage([](WebSocketClient *WebSocket, WSMessage msg){
-        
+    // Set message callback before connecting
+    ws.onMessage([](WebSocketClient *WebSocket, WSMessage msg){
         if(msg.MessageType == WSMessageType::TEXT_UTF8){
-            printf("Get new Messages: [%s]", msg.Data.c_str());
+            printf("Received new message: [%s]\n", msg.Data.c_str());
         }
     });
-
+    
+    // Connect to the WebSocket server
+    ws.Connect(strUrl);
+    
+    // Keep the program running to receive messages
     getchar();
     
-    // pause();
     return 0;
 }
+
 ```
 
 ---

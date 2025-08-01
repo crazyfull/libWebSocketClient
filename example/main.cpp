@@ -1,76 +1,75 @@
 #include <iostream>
-
-using namespace std;
-
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <string>
 #include <WebSocketClient/WebSocketClient.h>
-#include <iostream>
 
+// Callback when a message is received from the WebSocket server
+void onMessageCallback(WebSocketClient* WebSocket, const WSMessage& message) {
+    std::cout << "Received message: [" << message.Data << "] Type: " << message.MessageType << "\n";
 
-void onMessageCallback(WebSocketClient *WebSocket, const WSMessage &message) {
-    printf("onMessageCallback: [%s][%u]\n", message.Data.c_str(), message.MessageType);
-
-    if(message.MessageType == WSMessageType::TEXT_UTF8){
-       // WebSocket.SendMessage("onMessageCallback");
+    if (message.MessageType == WSMessageType::TEXT_UTF8) {
+        // You can handle text messages here if needed
     }
 
-    if(message.MessageType == WSMessageType::PING){
+    if (message.MessageType == WSMessageType::PING) {
+        // Respond to ping with pong, echoing the data
         WebSocket->SendPong(message.Data);
-        printf("SendPong: [%s]\n", message.Data.c_str());
+        std::cout << "Sent Pong response: [" << message.Data << "]\n";
     }
 }
 
-void onConnectCallback(WebSocketClient *WebSocket) {
-    printf("onConnetCallback\n");
-    WebSocket->SendMessage("onConnetCallback");
+// Callback when the WebSocket connection is established successfully
+void onConnectCallback(WebSocketClient* WebSocket) {
+    std::cout << "Connected to WebSocket server\n";
+    WebSocket->SendMessage("I'm a WebSocket client");
 }
 
-void onCloseCallback(WebSocketClient *WebSocket) {
-    printf("onCloseCallback\n");
+// Callback when the WebSocket connection is closed
+void onCloseCallback(WebSocketClient* WebSocket) {
+    std::cout << "WebSocket connection closed\n";
 }
 
-void onErrorCallback(WebSocketClient *WebSocket, WSError& err) {
-    printf("onErrorCallback: err: [%s]\n", err.Msg.c_str());
+// Callback when an error occurs on the WebSocket connection
+void onErrorCallback(WebSocketClient* WebSocket, WSError& err) {
+    std::cerr << "WebSocket error: " << err.Msg << "\n";
 }
 
-int main()
-{
-    string strUrl = "wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
+int main() {
+    std::string url = "wss://ws.ifelse.io";
 
+    // Create WebSocket client instance
     WebSocketClient WebSocket;
+
+    // Set up callbacks for WebSocket events
     WebSocket.onMessage(onMessageCallback);
     WebSocket.onConnect(onConnectCallback);
     WebSocket.onClose(onCloseCallback);
-    WebSocket.onError(onErrorCallback); 
+    WebSocket.onError(onErrorCallback);
+
+    // Enable masking for client messages (usually recommended for clients)
     WebSocket.setUsingMask(true);
+
+    // Enable SSL certificate validation (recommended for secure connections)
     WebSocket.setDisableCertificateValidation(false);
 
+    // Connect to the WebSocket server
+    WebSocket.Connect(url);
 
-    //connect to target
-    WebSocket.Connect(strUrl);
+    // Wait for user input before sending messages (to keep the program running)
+    std::cout << "Press Enter to send a text message...\n";
+    std::cin.get();
+    WebSocket.SendMessage("Hi from WebSocketClient");
 
+    std::cout << "Press Enter to send a Ping frame...\n";
+    std::cin.get();
+    WebSocket.SendPing("Ping data");
 
-    WebSocket.onMessage([](WebSocketClient *WebSocket, WSMessage msg){
+    std::cout << "Press Enter to send a Pong frame...\n";
+    std::cin.get();
+    WebSocket.SendPong("Pong data");
 
-        if(msg.MessageType == WSMessageType::TEXT_UTF8){
-            printf("Get new Messages: [%s]", msg.Data.c_str());
-        }
-    });
+    std::cout << "Press Enter to exit...\n";
+    std::cin.get();
 
-
-    getchar();
-    WebSocket.SendMessage("hi of WebSocketClient");
-
-    getchar();
-    WebSocket.SendPing("im ping");
-
-    getchar();
-    WebSocket.SendPong("im pong");
-
-    getchar();
-
-    // pause();
+    // WebSocket destructor will close the connection gracefully
     return 0;
 }

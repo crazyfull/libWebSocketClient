@@ -1,37 +1,96 @@
 # WebSocketClient #
 
-A simple and powerful websocket client library with the least dependency for c++
+A simple and powerful websocket client library with the least dependency for C++
 
+---
 
-**Features**
-   - Support WebSocket protocol (RFC 6455) 
-   - Support SSL/TLS (wss)  
-   - Minimal dependency
-   - Portable
-   - Cross platform
-   - Easy to use
-   - ...
-  
+## Features
+
+- Support WebSocket protocol (RFC 6455) — Full standard compliance for reliable websocket communication  
+- Support SSL/TLS (wss) — Secure websocket connections with OpenSSL integration  
+- Minimal dependency — Only requires standard C++ libraries and optionally OpenSSL  
+- Portable — Compatible with Linux, Windows, and macOS  
+- Cross platform — Easily build and run on multiple OS environments  
+- Easy to use — Simple and clear API to connect, send, and receive messages  
+- Lightweight — Designed to keep the binary size small and dependencies minimal
+
+---
 
 ## How to Build?
-**Build on Linux**
-```
-$ cmake -B build -S . -D USE_OPENSSL=1 -D BUILD_SHARED_LIBS=ON
 
-$ cd build
+### Prerequisites
 
-$ sudo make install
+- CMake version 3.14 or higher  
+- A C++11 compatible compiler (gcc, clang, MSVC)  
+- OpenSSL development libraries (if using SSL support)
+
+### Build on Linux (Modern CMake usage)
+
+```bash
+cmake -B build -S . -D USE_OPENSSL=1 -D BUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+sudo cmake --install build
 ```
 
-**Build on Windows**
+- `USE_OPENSSL=1` enables SSL/TLS support.  
+- `USE_OPENSSL=0` builds without SSL support.
+
+To uninstall:
+
+```bash
+sudo cmake --build build --target uninstall
 ```
-$ cmake -B build -S . -G "Visual Studio 14 2015" -D USE_OPENSSL=0 -D BUILD_SHARED_LIBS=ON
+
+---
+
+### Build on Windows
+
+```bash
+cmake -B build -S . -G "Visual Studio 14 2015" -D USE_OPENSSL=0 -D BUILD_SHARED_LIBS=ON
 ```
+
+---
 
 ## How to Use?
-```
-comming soon!
+
+```cpp
+// Example usage (coming soon)
+#include "WebSocketClient.h"
+
+int main()
+{
+    string strUrl = "wss://ws.ifelse.io";
+    
+    WebSocketClient WebSocket;
+    WebSocket.onMessage(onMessageCallback);
+    WebSocket.setUsingMask(true);
+    WebSocket.setDisableCertificateValidation(false);
+ 
+    
+    //connect to target
+    WebSocket.Connect(strUrl);
+    
+    
+    WebSocket.onMessage([](WebSocketClient *WebSocket, WSMessage msg){
+        
+        if(msg.MessageType == WSMessageType::TEXT_UTF8){
+            printf("Get new Messages: [%s]", msg.Data.c_str());
+        }
+    });
+
+    getchar();
+    
+    // pause();
+    return 0;
+}
 ```
 
+---
+
 ## Need more information?
-For any topic that you think is remarkable, you can create an issue so that we can discuss it. Correcting the code makes me happy in any way; whether it's a pull request or a note on the issue!
+
+If you have any questions or want to suggest features, please create an issue on the project repository.  
+Contributions in the form of pull requests or issue reports are always welcome and appreciated!
+
+---
+

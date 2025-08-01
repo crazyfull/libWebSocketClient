@@ -123,7 +123,7 @@ void HTTPClient::OnWSocketConnected()
 
 void HTTPClient::OnReceiveData(const char *Buffer, int Length)
 {
-   // LOG("OnReceiveData: [%s][%d]", Buffer, Length);
+    //LOG("OnReceiveData: [%s][%d]", Buffer, Length);
 
     if(m_HTTPProtocolType == HTTPProtocol::WEBSocket){
         OnWSocketReceiveData(Buffer, Length);

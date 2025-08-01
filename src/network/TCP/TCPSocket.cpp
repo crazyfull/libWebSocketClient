@@ -386,14 +386,6 @@ void TCPSocket::onThread(void *p)
     pThis->_onConnecting();
 }
 
-/*
-void *TCPSocket::onThread(void *p)
-{
-    TCPSocket *pThis = static_cast<TCPSocket*>(p);
-    pThis->_onConnecting();
-    return 0;
-}*/
-
 void TCPSocket::_onConnecting()
 {
     bool isConnect = onConnect();

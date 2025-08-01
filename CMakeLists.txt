@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(libWebSocketClient
-    VERSION 1.1.30
+    VERSION 1.1.31
     DESCRIPTION "WebSocket Client Library"
     LANGUAGES CXX)
 
@@ -134,17 +134,36 @@ message(STATUS "build options:
     C compiler:    ${CMAKE_C_COMPILER}
     ")
 
+
 if (USE_OPENSSL)
     message(STATUS "Using OpenSSL: YES")
-    #using openssl
-    find_package(OpenSSL REQUIRED)
-    target_link_libraries(libWebSocketClient PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
+    # add micro
     add_definitions(-D USE_OPENSSL)
+
+    # shared build
+    if (BUILD_SHARED_LIBS)
+        find_package(OpenSSL REQUIRED)
+        target_link_libraries(libWebSocketClient PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+    endif()
 
 else()
     message(STATUS "Using OpenSSL: NO")
 endif()
 
+
+
+# Run ldconfig automatically after install
+if(UNIX AND BUILD_SHARED_LIBS)
+    install(CODE "execute_process(COMMAND ldconfig)")
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 
 ## for disable log messages

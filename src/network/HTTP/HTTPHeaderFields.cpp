@@ -9,7 +9,11 @@ bool HTTPheaderFields::_AddField(const char *Name, int NameSize, const char *Val
 {
     if(Index < MAX_HTTP_HEADER_FIELDS)
     {
-        Fields[Index].Name.append(Name, NameSize);
+        //add name
+        for (int i = 0; i < NameSize; i++) {
+            Fields[Index].Name.push_back(std::tolower(static_cast<unsigned char>(Name[i])));
+        }
+
         Fields[Index].Value.append(Value, ValueSize);
         Index++;
         return true;
@@ -19,15 +23,25 @@ bool HTTPheaderFields::_AddField(const char *Name, int NameSize, const char *Val
 
 const string HTTPheaderFields::GetFieldByName(const char *Name) const
 {
-    string ret;
     for (int i = 0; i < Index; ++i)
     {
-        if(Fields[i].Name == Name)
-        {
-            ret = Fields[i].Value;
+        const std::string& fieldName = Fields[i].Name;
+
+        int j = 0;
+        while (j < fieldName.size() && Name[j]) {
+            if (fieldName[j] != std::tolower(static_cast<unsigned char>(Name[j]))) {
+                break;
+            }
+            ++j;
+        }
+
+        // equality
+        if (j == fieldName.size() && Name[j] == '\0') {
+            return Fields[i].Value;
         }
     }
-    return ret;
+
+    return {};  //return null
 }
 
 int16_t HTTPheaderFields::Count() const

@@ -9,7 +9,7 @@ A simple and powerful websocket client library with the least dependency for C++
 - Support WebSocket protocol (RFC 6455) — Full standard compliance for reliable websocket communication  
 - Support SSL/TLS (wss) — Secure websocket connections with OpenSSL integration  
 - Minimal dependency — Only requires standard C++ libraries and optionally OpenSSL  
-- Portable — Compatible with Linux, Windows, and macOS  
+- Portable — Compatible with Linux, Windows 
 - Cross platform — Easily build and run on multiple OS environments  
 - Easy to use — Simple and clear API to connect, send, and receive messages  
 - Lightweight — Designed to keep the binary size small and dependencies minimal

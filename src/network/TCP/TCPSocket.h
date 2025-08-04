@@ -3,6 +3,7 @@
 #include "../SocketHeader.h"
 #include <iostream>
 #include <thread>
+#include <atomic>
 using namespace std;
 
 #ifdef USE_OPENSSL
@@ -51,6 +52,7 @@ private:
     SSL *m_pSSL;
     bool m_IgnoreCertCheck;
     bool m_UsingSSL;
+    std::atomic<bool> m_ShouldStop;
 
 
     //Thread callback

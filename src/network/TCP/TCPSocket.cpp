@@ -14,6 +14,7 @@ TCPSocket::TCPSocket()
     m_pCTXClient = nullptr;
     m_pSSL = nullptr;
     m_IgnoreCertCheck = false;
+    m_ShouldStop = false;
 
 
     /*
@@ -83,21 +84,11 @@ bool TCPSocket::LoadNewSocket()
     return true;
 }
 
-void TCPSocket::killThread(){
-    std::thread::native_handle_type thID = m_Thread.native_handle();
-
-#ifdef _WIN32
-    //in win32
-    if(thID){
-        TerminateThread(thID, 1);
+void TCPSocket::killThread() {
+    m_ShouldStop = true;
+    if (m_Thread.joinable()) {
         m_Thread.join();
     }
-#else
-    if(thID > 0){
-        pthread_cancel(thID);
-        m_Thread.join();
-    }
-#endif
 }
 
 
@@ -191,32 +182,43 @@ void TCPSocket::SetSocketBlockingMode(int fd)
 #endif
 }
 
-int TCPSocket::GetSocketConnectTimeout(int fd)
-{
+int TCPSocket::GetSocketConnectTimeout(int fd) {
+#ifdef __linux__
     int retRyCount = 0;
     socklen_t len = sizeof(int);
     getsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, (char*)&retRyCount, &len);
     return retRyCount;
+#else
+    // Not supported on BSD.
+    return 0;
+#endif
 }
-void TCPSocket::SetSocketConnectTimeout(int fd, TCPCONNECTION_TIMEOUT Timeout)
-{
-    //5: 66sec , 4: 32sec, 3: 15sec, 2: 7sec, 1: 3sec
+
+void TCPSocket::SetSocketConnectTimeout(int fd, TCPCONNECTION_TIMEOUT Timeout) {
+#ifdef __linux__
     int synRetries = Timeout; // Send a total of 3 SYN packets => Timeout ~7s
     int isErr = setsockopt(fd, IPPROTO_TCP, TCP_SYNCNT, (char*)&synRetries, sizeof(synRetries));
-    if(isErr != 0){
+    if (isErr != 0) {
         DebugPrint("error setsockopt set flag TCP_SYNCNT, error[%d]", ERRNO);
     }
-
-    /*
+#else
+    // use SO_SNDTIMEO for bsd
     struct timeval timeout;
-    timeout.tv_sec  = 1;  // after 7 seconds connect() will timeout
-    timeout.tv_usec = 0;
-    int isErr = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
-    if(isErr != 0)
-    {
-        DebugPrint("error setsockopt set flag SO_LINGER, error[%d]", ERRNO);
+    switch (Timeout) {
+    case TIMEOUT_3_Sec: timeout.tv_sec = 3; break;
+    case TIMEOUT_7_Sec: timeout.tv_sec = 7; break;
+    case TIMEOUT_15_Sec: timeout.tv_sec = 15; break;
+    case TIMEOUT_32_Sec: timeout.tv_sec = 32; break;
+    case TIMEOUT_66_Sec: timeout.tv_sec = 66; break;
+    case TIMEOUT_132_Sec: timeout.tv_sec = 132; break;
+    default: timeout.tv_sec = 35; break;
     }
-*/
+    timeout.tv_usec = 0;
+    int isErr = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
+    if (isErr != 0) {
+        DebugPrint("error setsockopt set flag SO_SNDTIMEO, error[%d]", ERRNO);
+    }
+#endif
 }
 
 void TCPSocket::SetKeepAlive(int fd, bool isActive)
@@ -236,26 +238,20 @@ void TCPSocket::SetKeepAlive(int fd, bool isActive)
         return;
     }
     return;
-#else
-    int optval;
+#endif
+
+    int optval = isActive ? 1 : 0;
     socklen_t optlen = sizeof(optval);
 
-    if(isActive == false)
-    {
-        optval = 0;
-    }else{
-        //enable KeepAlive
-        optval = 1;
-    }
-
-    if(setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char*)&optval, optlen) < 0) {
+    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char*)&optval, optlen) < 0) {
         DebugPrint("setsockopt() SO_KEEPALIVE");
         return;
     }
 
-    if(isActive == false){
+#ifdef __linux__
+
+    if(!isActive)
         return;
-    }
 
     //Set time
     int keepcnt = 4;        //tedade kavosh keepalive ghabl az az marg  //The maximum number of keepalive probes TCP should send before dropping the connection. This option should not be used in code intended to be portable.
@@ -380,10 +376,11 @@ void TCPSocket::setTimeOut(TCPCONNECTION_TIMEOUT newTimeOut)
     m_TimeOut = newTimeOut;
 }
 
-void TCPSocket::onThread(void *p)
-{
+void TCPSocket::onThread(void *p) {
     TCPSocket *pThis = static_cast<TCPSocket*>(p);
-    pThis->_onConnecting();
+    while (!pThis->m_ShouldStop) {
+        pThis->_onConnecting();
+    }
 }
 
 void TCPSocket::_onConnecting()
